@@ -1,5 +1,5 @@
 <?php
-namespace App\Traits;
+namespace App\Models\Concerns;
 
 use App\Ttls\OnlineUserTTL;
 use Illuminate\Support\Facades\Request;

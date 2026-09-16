@@ -1,5 +1,5 @@
 <?php
-namespace App\Traits;
+namespace App\Models\Concerns;
 
 use Exception;
 use Illuminate\Support\Facades\Cache;
