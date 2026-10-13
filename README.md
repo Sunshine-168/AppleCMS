@@ -16,7 +16,7 @@
 
 代码开放，无加密、无隐藏后门，可以自己部署，也可以二次开发。试用可以只用 SQLite，不必先装 MySQL。
 
-**官方唯一 Telegram 联系方式：** [@sanpang](https://github.com/sanpang)
+**官方唯一 Telegram 联系方式：** [@sanpang](https://t.me/sanpang)
 
 **温馨提示：** 请认准官方唯一联系方式，谨防冒充与诈骗。
 
@@ -288,7 +288,7 @@ nginx 完整示例、php.ini 建议见安装页「上线部署」或后台说明
 
 ## 联系我们
 
-**官方唯一 Telegram 联系方式：** [@sanpang](https://github.com/sanpang)
+**官方唯一 Telegram 联系方式：** [@sanpang](https://t.me/sanpang)
 
 **温馨提示：** 请认准官方唯一联系方式，谨防冒充与诈骗。
 
