@@ -25,6 +25,7 @@
 composer.phar
 /tests
 /tools
+/scripts
 Homestead.json
 Homestead.yaml
 Thumbs.db
