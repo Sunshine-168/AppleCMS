@@ -90,8 +90,8 @@
 代码必须放在**项目根**（能看到 `artisan`、`install.sh`、`public/` 的那一层）。宝塔「网站根目录」填的是里面的 `public`，终端命令要在项目根执行，不要进 `public`。
 
 ```bash
-git clone <你的仓库地址> LaraVideo
-cd LaraVideo
+git clone <你的仓库地址> AppleCms
+cd AppleCms
 ```
 
 没有 Git 就把压缩包解到这一层，再 `cd` 进去。
