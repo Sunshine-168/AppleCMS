@@ -169,13 +169,13 @@ php artisan video:install --password=YourPass#1 --demo
 
 ## 宝塔上线
 
-按顺序做，不要跳。下面把 `/www/wwwroot/video.test-sun.com` 换成你的**项目根**。
+按顺序做，不要跳。下面把 `/www/wwwroot/example.com` 换成你的**项目根**。
 
 1. **建站**  
    PHP 选 **8.4**。运行目录 / 网站根目录填：
 
    ```
-   /www/wwwroot/video.test-sun.com/public
+   /www/wwwroot/example.com/public
    ```
 
    不要填到项目根，也不要填到 `public` 再往里一层。
@@ -184,7 +184,7 @@ php artisan video:install --password=YourPass#1 --demo
    项目根里要有 `artisan`。终端先进入项目根：
 
    ```bash
-   cd /www/wwwroot/video.test-sun.com
+   cd /www/wwwroot/example.com
    ```
 
 3. **权限**（运行用户一般是 `www`）  
@@ -218,7 +218,7 @@ php artisan video:install --password=YourPass#1 --demo
    必须用 **`/bin/php`**，不要用 `php-fpm`。后台「系统 → 监控」也会给出当前机器的一行。宝塔计划任务示例：
 
    ```bash
-   /www/server/php/84/bin/php /www/wwwroot/video.test-sun.com/artisan schedule:run >> /dev/null 2>&1
+   /www/server/php/84/bin/php /www/wwwroot/example.com/artisan schedule:run >> /dev/null 2>&1
    ```
 
    采集、点击重置、监控都靠这一行。没配就会停。
