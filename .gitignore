@@ -23,6 +23,8 @@
 /storage/framework/views/*
 !/storage/framework/views/.gitignore
 composer.phar
+/tests
+/tools
 Homestead.json
 Homestead.yaml
 Thumbs.db
