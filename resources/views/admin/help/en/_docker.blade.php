@@ -21,7 +21,7 @@
 
         <h3>3. Open the site</h3>
         <p class="muted">Front <a href="http://127.0.0.1:8010/">http://127.0.0.1:8010/</a><br>Admin <a href="http://127.0.0.1:8010/admin/login">http://127.0.0.1:8010/admin/login</a></p>
-        <p class="hint">Change the password before going live. Set <code>APP_DEBUG=false</code>. Port is <strong>8010</strong>.</p>
+        <p class="hint">Change the password before going live. Set <code>APP_DEBUG=false</code>. Port is <strong>8010</strong>. The container runs <code>schedule:run</code> every minute, so timed collect does not need crontab. The admin collect button fetches one page at a time.</p>
 
         <h3>Useful commands</h3>
         <div class="code">

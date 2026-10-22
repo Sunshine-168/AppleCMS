@@ -51,6 +51,50 @@ class Captcha
         ];
     }
 
+    public static function mode(): string
+    {
+        try {
+            $mode = (string) app(\App\Services\Video\VideoSettingService::class)->get('captcha_driver', 'image');
+        } catch (\Throwable) {
+            return 'image';
+        }
+
+        return $mode === 'cap' ? 'cap' : 'image';
+    }
+
+    public static function widgetEndpoint(): string
+    {
+        $base = rtrim(self::option('cap_api_endpoint'), '/');
+        $key = trim(self::option('cap_site_key'));
+        if ($base === '' || $key === '' || ! preg_match('#^https?://#i', $base)) {
+            return '';
+        }
+        if (str_ends_with($base, '/'.$key)) {
+            return $base.'/';
+        }
+
+        return $base.'/'.$key.'/';
+    }
+
+    /**
+     * @return array{ok:bool,msg:string}
+     */
+    public static function verify(?string $answer): array
+    {
+        if (self::mode() === 'cap') {
+            return self::verifyCap($answer);
+        }
+        $answer = trim((string) $answer);
+        if ($answer === '') {
+            return ['ok' => false, 'msg' => admin_t('auth.need_captcha')];
+        }
+        if (! self::check($answer)) {
+            return ['ok' => false, 'msg' => admin_t('auth.captcha_wrong')];
+        }
+
+        return ['ok' => true, 'msg' => ''];
+    }
+
     public static function check(?string $answer): bool
     {
         $expect = session('captcha');
@@ -61,6 +105,54 @@ class Captcha
         }
 
         return (int) $expect === (int) $answer;
+    }
+
+    /**
+     * @return array{ok:bool,msg:string}
+     */
+    private static function verifyCap(?string $token): array
+    {
+        $token = trim((string) $token);
+        $secret = trim(self::option('cap_secret'));
+        $endpoint = self::widgetEndpoint();
+        if ($endpoint === '' || $secret === '') {
+            return ['ok' => false, 'msg' => 'Cap 还没配好：请填写接口地址、site key 和 secret'];
+        }
+        if ($token === '') {
+            return ['ok' => false, 'msg' => '请先完成人机验证'];
+        }
+        $url = rtrim($endpoint, '/').'/siteverify';
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(8)
+                ->acceptJson()
+                ->post($url, [
+                    'secret' => $secret,
+                    'response' => $token,
+                ]);
+        } catch (\Throwable) {
+            return ['ok' => false, 'msg' => 'Cap 接口连不上，没有放行'];
+        }
+        if (! $response->successful()) {
+            return ['ok' => false, 'msg' => 'Cap 接口连不上，没有放行'];
+        }
+        $json = $response->json();
+        $passed = is_array($json) && filter_var($json['success'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        if (! $passed) {
+            $err = trim((string) (is_array($json) ? ($json['error'] ?? $json['message'] ?? '') : ''));
+
+            return ['ok' => false, 'msg' => $err !== '' ? 'Cap 验证没通过：'.$err : 'Cap 验证没通过'];
+        }
+
+        return ['ok' => true, 'msg' => ''];
+    }
+
+    private static function option(string $key): string
+    {
+        try {
+            return trim((string) app(\App\Services\Video\VideoSettingService::class)->get($key, ''));
+        } catch (\Throwable) {
+            return '';
+        }
     }
 
     public static function response(): \Illuminate\Http\Response

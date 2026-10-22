@@ -139,8 +139,9 @@ class FriendLinkService
         if ($opt['allow_apply'] !== 1) {
             return Result::fail('前台申请已关闭');
         }
-        if (! Captcha::check(isset($data['captcha']) ? (string) $data['captcha'] : null)) {
-            return Result::fail('验证码不对');
+        $checked = Captcha::verify(isset($data['captcha']) ? (string) $data['captcha'] : null);
+        if (! $checked['ok']) {
+            return Result::fail($checked['msg'] !== '' ? $checked['msg'] : '验证码不对');
         }
         $name = mb_substr(trim((string) ($data['name'] ?? '')), 0, 120);
         $url = self::httpUrl((string) ($data['url'] ?? ''));

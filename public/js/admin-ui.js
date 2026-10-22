@@ -89,8 +89,13 @@
             opts.body = qs(payload);
         }
         return fetch(url, opts).then(function (r) {
-            return r.json().then(function (json) {
+            return r.text().then(function (text) {
+                var json = null;
+                try { json = JSON.parse(text); } catch (e) { json = null; }
                 if (!json || typeof json !== 'object') {
+                    if (text && text.indexOf('Maximum execution time') >= 0) {
+                        return { code: 1, msg: '这一页被 30 秒限制打断，从上一页继续' };
+                    }
                     return { code: 1, msg: statusMsg(r) };
                 }
                 if (json.code === undefined) json.code = r.ok ? 0 : 1;

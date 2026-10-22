@@ -7,4 +7,6 @@ RUN apt-get update \
     && docker-php-ext-install pdo_sqlite pdo_mysql bcmath pcntl zip \
     && rm -rf /var/lib/apt/lists/*
 
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/zz-laravideo.ini
+
 WORKDIR /var/www/html

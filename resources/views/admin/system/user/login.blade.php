@@ -20,7 +20,7 @@
     </div>
     <div class="mac-login-card">
         <h1>{{ admin_t('auth.system') }}</h1>
-        <form id="loginForm" method="post" action="/api/admin/login" data-fail="{{ admin_t('auth.fail') }}" data-network="{{ admin_t('auth.network') }}" data-user="{{ admin_t('auth.required_user') }}" data-pass="{{ admin_t('auth.required_pass') }}" data-captcha-empty="{{ admin_t('auth.required_captcha') }}" data-expired="{{ admin_t('top.unlock_expired') }}">
+        <form id="loginForm" method="post" action="/api/admin/login" data-cap="{{ \App\Support\Captcha::mode() === 'cap' ? '1' : '0' }}" data-fail="{{ admin_t('auth.fail') }}" data-network="{{ admin_t('auth.network') }}" data-user="{{ admin_t('auth.required_user') }}" data-pass="{{ admin_t('auth.required_pass') }}" data-captcha-empty="{{ admin_t('auth.required_captcha') }}" data-cap-need="{{ admin_t('auth.captcha_cap_need') }}" data-expired="{{ admin_t('top.unlock_expired') }}">
             @csrf
             <div class="mac-field">
                 <label for="username">{{ admin_t('auth.username') }}</label>
@@ -40,6 +40,18 @@
                     <input type="password" id="password" name="password" required autocomplete="current-password" maxlength="32">
                 </div>
             </div>
+            @if(\App\Support\Captcha::mode() === 'cap')
+            <div class="mac-field">
+                <label for="captcha">{{ admin_t('ui.captcha_cap') }}</label>
+                <div class="mac-captcha-cap">
+                    @include('partials.cap-widget', ['capId' => 'capWidget'])
+                    <input type="hidden" id="captcha" name="captcha" value="">
+                    @if(\App\Support\Captcha::widgetEndpoint() === '')
+                        <p class="mac-error" style="display:block">Cap 还没配好：请填写接口地址、site key 和 secret</p>
+                    @endif
+                </div>
+            </div>
+            @else
             <div class="mac-field">
                 <label for="captcha">{{ admin_t('auth.captcha') }}</label>
                 <div class="mac-captcha">
@@ -52,6 +64,7 @@
                     <button type="button" class="mac-captcha-q" id="captchaLabel" title="{{ admin_t('ui.captcha_refresh') }}"><img id="captchaImg" src="/admin/captcha" width="160" height="40" alt="{{ admin_t('auth.captcha') }}"></button>
                 </div>
             </div>
+            @endif
             <label class="mac-remember"><input type="checkbox" name="remember" value="1"> {{ admin_t('auth.remember') }}</label>
             <p class="mac-error" id="loginError" hidden></p>
             <button type="submit" class="mac-submit" id="loginBtn">{{ admin_t('auth.submit') }}</button>
@@ -69,8 +82,16 @@
 <script>
 (function () {
     var form = document.getElementById('loginForm');
+    var capMode = form.getAttribute('data-cap') === '1';
     var label = document.getElementById('captchaLabel');
     var input = document.getElementById('captcha');
+    var capWidget = document.getElementById('capWidget');
+    if (capWidget) {
+        capWidget.addEventListener('solve', function (e) {
+            var token = e && e.detail ? (e.detail.token || '') : '';
+            if (input) input.value = token;
+        });
+    }
     var err = document.getElementById('loginError');
     var btn = document.getElementById('loginBtn');
 
@@ -118,7 +139,7 @@
         input.value = '';
     }
 
-    label.addEventListener('click', refreshCaptcha);
+    if (label) label.addEventListener('click', refreshCaptcha);
 
     form.addEventListener('submit', function (ev) {
         ev.preventDefault();
@@ -129,6 +150,7 @@
         var user = (form.username.value || '').trim();
         var pass = form.password.value || '';
         var cap = (form.captcha.value || '').trim();
+        if (capMode && !cap && capWidget && capWidget.token) cap = String(capWidget.token);
         if (!user) {
             mark('username', true);
             showError(form.getAttribute('data-user') || '');
@@ -143,10 +165,11 @@
         }
         if (!cap) {
             mark('captcha', true);
-            showError(form.getAttribute('data-captcha-empty') || '');
-            input.focus();
+            showError(capMode ? (form.getAttribute('data-cap-need') || '') : (form.getAttribute('data-captcha-empty') || ''));
+            if (input && !capMode) input.focus();
             return;
         }
+        if (capMode && input) input.value = cap;
         btn.disabled = true;
         fetch('/api/admin/login', {
             method: 'POST',
@@ -174,11 +197,16 @@
                 ? (form.getAttribute('data-expired') || '')
                 : (form.getAttribute('data-fail') || '');
             showError(pickMsg(json, fallback));
-            refreshCaptcha();
-            input.focus();
+            if (capMode) {
+                if (input) input.value = '';
+                if (capWidget && typeof capWidget.reset === 'function') capWidget.reset();
+            } else {
+                refreshCaptcha();
+                if (input) input.focus();
+            }
         }).catch(function () {
             showError(form.getAttribute('data-network') || '');
-            refreshCaptcha();
+            if (!capMode) refreshCaptcha();
         }).finally(function () {
             btn.disabled = false;
         });

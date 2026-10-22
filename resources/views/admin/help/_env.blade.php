@@ -6,17 +6,7 @@
         <h2>上线要准备什么</h2>
         <p class="muted">试用用 Docker 或 <code>php artisan serve</code>。正式站把网站根目录指到 <code>public</code>，PHP 用 8.4，并每分钟跑定时任务。</p>
 
-        <h3>宝塔（最短）</h3>
-        <ol class="muted">
-            <li>网站根目录选项目里的 <code>public</code>，PHP 选 <strong>8.4</strong>。</li>
-            <li>给 <code>storage</code>、<code>bootstrap/cache</code> 运行用户可写（一般是 www）。</li>
-            <li>终端进入项目目录执行 <code>bash install.sh</code>，或打开 <code>/install</code> 网页装。</li>
-            <li>计划任务每分钟跑后台「监控」里复制出来的那一行（必须是 <code>/bin/php</code>，不要 <code>php-fpm</code>）。</li>
-        </ol>
-        <div class="code">
-            <button type="button" class="copy" data-copy>复制</button>
-            <pre><code>/www/server/php/84/bin/php /www/wwwroot/你的站点/artisan schedule:run >> /dev/null 2>&amp;1</code></pre>
-        </div>
+        @include('admin.help._baota')
 
         <h3>PHP 环境</h3>
         <p class="muted">需要 PHP <strong>8.4 或更高</strong>，并打开这些扩展：<code>pdo</code>、<code>mbstring</code>、<code>openssl</code>、<code>tokenizer</code>、<code>xml</code>、<code>ctype</code>、<code>json</code>、<code>fileinfo</code>、<code>curl</code>。用 MySQL 再开 <code>pdo_mysql</code>；用 SQLite 再开 <code>pdo_sqlite</code>。</p>
@@ -30,7 +20,7 @@ post_max_size = 32M
 max_execution_time = 60
 date.timezone = Asia/Shanghai</code></pre>
         </div>
-        <p class="hint">改完后重启 php-fpm 或网站服务。目录 <code>storage</code> 和 <code>bootstrap/cache</code> 必须可写，并执行过 <code>php artisan storage:link</code>。</p>
+        <p class="hint">改完后重启 php-fpm 或网站服务。目录 <code>storage</code> 和 <code>bootstrap/cache</code> 必须可写，并执行过 <code>php artisan storage:link</code>。网页采集每次只拉一页，一般不用把超时改成 300 秒。只有单独一页也被掐断时，再把 <code>max_execution_time</code> 和 nginx 的 <code>fastcgi_read_timeout</code> 调大。</p>
 
         <h3>MySQL</h3>
         <p class="muted">正式站点建议 MySQL 5.7 / 8.0 或 MariaDB 10.3+，字符集用 <code>utf8mb4</code>。先建空库，再把账号写进 <code>.env</code>。</p>

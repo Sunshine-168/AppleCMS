@@ -6,6 +6,8 @@
         <h2>What you need to go live</h2>
         <p class="muted"><code>php artisan serve</code> is for trying the site. Production needs PHP, a database, and nginx (or similar) pointing at the <code>public</code> directory.</p>
 
+        @include('admin.help._baota')
+
         <h3>PHP</h3>
         <p class="muted">PHP <strong>8.4 or newer</strong>, with <code>pdo</code>, <code>mbstring</code>, <code>openssl</code>, <code>tokenizer</code>, <code>xml</code>, <code>ctype</code>, <code>json</code>, <code>fileinfo</code>, <code>curl</code>. Add <code>pdo_mysql</code> for MySQL or <code>pdo_sqlite</code> for SQLite.</p>
         <p class="muted">Watermarks and thumbs need <code>gd</code> or <code>imagick</code>. The site still installs without them.</p>
@@ -18,7 +20,7 @@ post_max_size = 32M
 max_execution_time = 60
 date.timezone = Asia/Shanghai</code></pre>
         </div>
-        <p class="hint">Restart php-fpm afterwards. <code>storage</code> and <code>bootstrap/cache</code> must be writable. Run <code>php artisan storage:link</code>.</p>
+        <p class="hint">Restart php-fpm afterwards. <code>storage</code> and <code>bootstrap/cache</code> must be writable. Run <code>php artisan storage:link</code>. Admin collect fetches one page per request, so you do not need a 300 second limit. Raise <code>max_execution_time</code> and nginx <code>fastcgi_read_timeout</code> only when a single page still gets cut off.</p>
 
         <h3>MySQL</h3>
         <p class="muted">Prefer MySQL 5.7 / 8.0 or MariaDB 10.3+, charset <code>utf8mb4</code>. Create an empty database, then put the account in <code>.env</code>.</p>

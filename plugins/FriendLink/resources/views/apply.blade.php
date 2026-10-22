@@ -36,6 +36,16 @@
                     </label>
                 </div>
 
+                @if(\App\Support\Captcha::mode() === 'cap')
+                <div class="flink-captcha">
+                    <span class="flink-captcha-label">人机验证</span>
+                    @include('partials.cap-widget', ['capId' => 'flinkCap'])
+                    <input type="hidden" name="captcha" id="flink-captcha" value="">
+                    @if(\App\Support\Captcha::widgetEndpoint() === '')
+                        <p class="muted">Cap 还没配好：请在后台填写接口地址、site key 和 secret。</p>
+                    @endif
+                </div>
+                @else
                 <div class="flink-captcha">
                     <span class="flink-captcha-label">验证码</span>
                     <div class="flink-captcha-row">
@@ -45,6 +55,7 @@
                         <input type="text" name="captcha" required inputmode="numeric" autocomplete="off" placeholder="计算结果" aria-label="验证码">
                     </div>
                 </div>
+                @endif
 
                 <div class="flink-actions">
                     <button type="submit" class="btn-play">提交申请</button>
@@ -58,6 +69,26 @@
 @push('scripts')
 <script>
 (function () {
+    var cap = document.getElementById('flinkCap');
+    var hidden = document.getElementById('flink-captcha');
+    if (cap && hidden) {
+        cap.addEventListener('solve', function (e) {
+            hidden.value = e && e.detail ? (e.detail.token || '') : '';
+        });
+        var form = hidden.closest('form');
+        if (form) {
+            form.addEventListener('submit', function (ev) {
+                var token = hidden.value || (cap.token ? String(cap.token) : '');
+                if (!token) {
+                    ev.preventDefault();
+                    window.alert('请先完成人机验证');
+                    return;
+                }
+                hidden.value = token;
+            });
+        }
+        return;
+    }
     var btn = document.getElementById('flink-captcha-refresh');
     var img = document.getElementById('flink-captcha-pic');
     if (!btn || !img) return;

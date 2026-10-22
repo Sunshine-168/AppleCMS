@@ -16,10 +16,11 @@
     $sqlitePath = (string) ($sqlitePath ?? 'database/database.sqlite');
     $checks = is_array($checks ?? null) ? $checks : [];
 @endphp
-<div class="wrap install-index">
+<div class="wrap install-index{{ ($way ?? 'web') === 'baota' ? ' is-wide' : '' }}">
     <div class="brand"><span class="logo">苹</span> 苹果v12 安装</div>
     <nav class="ways" aria-label="安装方式">
         <a class="{{ ($way ?? 'web') === 'web' ? 'is-on' : '' }}" href="{{ url('/install') }}">网页安装</a>
+        <a class="{{ ($way ?? 'web') === 'baota' ? 'is-on' : '' }}" href="{{ url('/install?way=baota') }}">宝塔配置</a>
         <a class="{{ ($way ?? 'web') === 'laravel' ? 'is-on' : '' }}" href="{{ url('/install?way=laravel') }}">Shell</a>
         <a class="{{ ($way ?? 'web') === 'docker' ? 'is-on' : '' }}" href="{{ url('/install?way=docker') }}">Docker</a>
         <a class="{{ ($way ?? 'web') === 'deploy' ? 'is-on' : '' }}" href="{{ url('/install?way=deploy') }}">上线部署</a>
@@ -27,6 +28,7 @@
     @if(($way ?? 'web') !== 'web')
     <div class="card install-guide">
         @include(match ($way) {
+            'baota' => 'admin.help._baota',
             'laravel' => 'admin.help._laravel',
             'docker' => 'admin.help._docker',
             default => 'admin.help._env',
@@ -66,7 +68,7 @@
                             </li>
                         @endforeach
                     </ul>
-                    <p class="hint">完整 php.ini、nginx 和定时任务见 <a href="{{ url('/install?way=deploy') }}">上线部署</a>。</p>
+                    <p class="hint">用宝塔的话，先看 <a href="{{ url('/install?way=baota') }}">宝塔图解</a>。php.ini、nginx 见 <a href="{{ url('/install?way=deploy') }}">上线部署</a>。</p>
                     <div class="actions">
                         <span class="muted">{{ $requiredOk ? '' : '先处理标成必须修复的项。' }}</span>
                         <button class="btn" type="button" data-next @disabled(! $requiredOk)>下一步：数据库</button>

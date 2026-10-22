@@ -28,6 +28,7 @@ body {
     font-size: 14px;
 }
 .wrap { max-width: 920px; margin: 0 auto; padding: 40px 20px 56px; }
+.wrap.is-wide { max-width: 1080px; }
 .brand { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-weight: 700; font-size: 16px; }
 .ways {
     display: flex;
@@ -210,9 +211,18 @@ input:focus {
 .done h1 { margin: 0 0 8px; font-size: 22px; }
 .done .btns { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
 .done .account { margin: 12px auto 0; max-width: 360px; padding: 10px 12px; background: #f7f9fc; border-radius: 8px; color: var(--muted); }
-.install-guide {
+.install-next { margin: 18px auto 0; max-width: 560px; text-align: left; padding: 14px 14px 6px; background: #f7f9fc; border-radius: 10px; }
+.install-next h2 { margin: 0 0 6px; font-size: 16px; }
+.install-next p { margin: 0 0 8px; color: var(--muted); line-height: 1.55; font-size: 13px; }
+.install-next .code { position: relative; margin: 8px 0; background: #1e2228; color: #e8eaed; border-radius: 8px; overflow: hidden; }
+.install-next .code pre { margin: 0; padding: 14px 72px 16px 16px; overflow: auto; font-size: 12px; line-height: 1.5; }
+.install-next .code code { font-family: Consolas, "SF Mono", Menlo, monospace; }
+.install-next .code .copy { position: absolute; top: 8px; right: 8px; border: 0; background: rgba(255,255,255,.12); color: #fff; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
+.install-next a { color: var(--primary-deep); }
+.card.install-guide {
     display: block;
     min-height: 0;
+    overflow: visible;
 }
 .install-guide .card.guide {
     display: block;

@@ -18,7 +18,7 @@
         <tr><td><code>monitor:tick</code></td><td>每分钟</td><td>运行监控采样</td></tr>
     </tbody>
 </table>
-<p class="hint">本机 <code>php artisan serve</code> 或 Docker 试用可以不配。正式站至少要有下面那一行，路径已按当前服务器填好。</p>
+<p class="hint">本机 <code>php artisan serve</code> 可以不配。Docker 镜像会自己每分钟跑一次。宝塔正式站至少要有下面那一行，路径已按当前服务器填好。</p>
 
 <h3>推荐：上线最小配置</h3>
 <div class="code">
@@ -36,4 +36,4 @@ php artisan video:hits-reset
 php artisan video:html-make
 php artisan stats:prune</code></pre>
 </div>
-<p class="muted">单源采集：<code>php artisan video:collect {id}</code>。静态页生成也可在{!! $hl('make', '静态生成') !!}里点。</p>
+<p class="muted">单源采集：<code>php artisan video:collect {id} --pages=50 --hours=24 --jobs=4</code>。定时任务在命令行里会同时拉 4 页，再按页码入库。资源站限流时把 <code>--jobs</code> 改成 2。后台按钮仍是一页一次，避免 30 秒被掐断。静态页生成也可在{!! $hl('make', '静态生成') !!}里点。</p>

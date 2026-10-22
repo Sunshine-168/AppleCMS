@@ -173,6 +173,9 @@ class CollectIngestService
         $ids = (string) ($params['ids'] ?? '');
         $remoteType = (string) ($params['t'] ?? '');
         $wd = app(SynonymService::class)->expand(trim((string) ($params['wd'] ?? $params['keyword'] ?? '')));
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(0);
+        }
 
         $created = 0;
         $updated = 0;
@@ -183,46 +186,48 @@ class CollectIngestService
         $lastPage = $start;
         $failMsg = '';
         $sourcePk = (int) $source->id;
+        $concurrency = $this->collectConcurrency($params, $pages, $ids);
+        $prefer = (string) ($source->api_type ?: 'auto');
+        $apiUrl = (string) $source->api_url;
         CollectProgress::start($sourcePk, trim((string) $source->name));
 
-        for ($page = $start; $page < $start + $pages; $page++) {
+        $page = $start;
+        $end = $start + $pages - 1;
+        while ($page <= $end) {
+            $batchEnd = min($end, $page + $concurrency - 1);
+            if ($page > $start && $pageCount > 0) {
+                $batchEnd = min($batchEnd, $pageCount);
+            }
+            if ($batchEnd < $page) {
+                break;
+            }
+            $queries = [];
+            for ($n = $page; $n <= $batchEnd; $n++) {
+                $queries[$n] = $this->pageQuery($source, $n, $hours, $ids, $remoteType, $wd);
+            }
+            $span = $batchEnd > $page ? '第 '.$page.'–'.$batchEnd.' 页' : '第 '.$page.' 页';
             CollectProgress::tick($sourcePk, [
                 'page' => $page,
                 'pages' => $pageCount,
-                'msg' => '正在采集第 '.$page.' 页…',
+                'msg' => '正在采集'.$span.'…',
                 'action' => 'fetch',
                 'title' => '',
             ], [
                 'action' => 'fetch',
                 'page' => $page,
-                'msg' => '正在采集第 '.$page.' 页…',
+                'msg' => '正在采集'.$span.'…',
             ]);
-            $query = [
-                'ac' => $ids !== '' ? 'detail' : ($this->isMangaSource($source) ? 'detail' : 'videolist'),
-                'pg' => $page,
-            ];
-            if ($hours > 0) {
-                $query['h'] = $hours;
-            }
-            if ($ids !== '') {
-                $query['ids'] = $ids;
-                $query['ac'] = 'detail';
-            }
-            if ($remoteType !== '') {
-                $query['t'] = $remoteType;
-            }
-            if ($wd !== '') {
-                $query['wd'] = $wd;
-            }
-            if (trim((string) $source->param) !== '') {
-                parse_str(ltrim((string) $source->param, '&'), $extra);
-                $query = array_merge($query, $extra);
-            }
+            $fetchedMap = count($queries) > 1
+                ? $this->client->fetchMany($apiUrl, $queries, $prefer)
+                : [$page => $this->client->fetch($apiUrl, $queries[$page], $prefer)];
 
-            $fetched = $this->client->fetch((string) $source->api_url, $query, (string) ($source->api_type ?: 'auto'));
+            $stop = false;
+            foreach ($queries as $current => $query) {
+                $fetched = $fetchedMap[$current] ?? $this->client->fetch($apiUrl, $query, $prefer);
+                $page = $current;
             if (! ($fetched['ok'] ?? false)) {
                 $failMsg = (string) $fetched['msg'];
-                $this->persistCollectState($source, $page, $created, $updated, $failMsg, false);
+                $this->persistCollectState($source, max(0, $page - 1), $created, $updated, $failMsg, false);
                 CollectProgress::finish($sourcePk, [
                     'ok' => 0,
                     'page' => $page,
@@ -239,7 +244,12 @@ class CollectIngestService
                     'msg' => $failMsg,
                 ]);
 
-                return Result::fail($failMsg);
+                return Result::fail($failMsg, [
+                    'page' => ['page' => $page, 'pagecount' => $pageCount],
+                    'created' => $created,
+                    'updated' => $updated,
+                    'skipped' => $skipped,
+                ]);
             }
             $lastPage = $page;
             $pageInfo = $fetched['page'] ?? [];
@@ -289,9 +299,16 @@ class CollectIngestService
                 'page' => $page,
                 'msg' => '本页采集完成',
             ]);
-            if ($ids !== '' || ($pageCount > 0 && $page >= $pageCount)) {
+            $this->persistCollectState($source, $page, $created, $updated, '第 '.$page.' 页已入库', true, $skipped, false);
+                if ($ids !== '' || ($pageCount > 0 && $page >= $pageCount)) {
+                    $stop = true;
+                    break;
+                }
+            }
+            if ($stop) {
                 break;
             }
+            $page = $batchEnd + 1;
         }
 
         $summary = "采集完成，共 {$lastPage} 页，新增 {$created}，更新 {$updated}，跳过 {$skipped}";
@@ -312,13 +329,18 @@ class CollectIngestService
             'msg' => $summary,
         ]);
 
-        return AdminOpLog::ifOk(Result::success([
+        $done = Result::success([
             'page' => $pageInfo,
             'created' => $created,
             'updated' => $updated,
             'skipped' => $skipped,
             'logs' => array_slice($logs, 0, 80),
-        ], "入库新建 {$created}，更新 {$updated}，跳过 {$skipped}"), 'run', '运行了采集《'.trim((string) $source->name).'》', [
+        ], "入库新建 {$created}，更新 {$updated}，跳过 {$skipped}");
+        if ((int) ($params['quiet'] ?? 0) === 1) {
+            return $done;
+        }
+
+        return AdminOpLog::ifOk($done, 'run', '运行了采集《'.trim((string) $source->name).'》', [
             'module' => '采集源',
             'target_type' => 'collects',
             'target_id' => $sourceId,
@@ -350,7 +372,49 @@ class CollectIngestService
         return $this->run($sourceId, ['page' => $page, 'pages' => 1]);
     }
 
-    private function persistCollectState(CollectSourceModel $source, int $page, int $created, int $updated, string $msg, bool $ok, int $skipped = 0): void
+    /** @param  array<string, mixed>  $params */
+    private function collectConcurrency(array $params, int $pages, string $ids): int
+    {
+        if ($ids !== '' || $pages <= 1) {
+            return 1;
+        }
+        $n = (int) ($params['concurrency'] ?? 0);
+        if ($n < 1) {
+            $n = app()->runningInConsole() ? 4 : 1;
+        }
+
+        return max(1, min(8, $n));
+    }
+
+    /** @return array<string, mixed> */
+    private function pageQuery(CollectSourceModel $source, int $page, int $hours, string $ids, string $remoteType, string $wd): array
+    {
+        $query = [
+            'ac' => $ids !== '' ? 'detail' : ($this->isMangaSource($source) ? 'detail' : 'videolist'),
+            'pg' => $page,
+        ];
+        if ($hours > 0) {
+            $query['h'] = $hours;
+        }
+        if ($ids !== '') {
+            $query['ids'] = $ids;
+            $query['ac'] = 'detail';
+        }
+        if ($remoteType !== '') {
+            $query['t'] = $remoteType;
+        }
+        if ($wd !== '') {
+            $query['wd'] = $wd;
+        }
+        if (trim((string) $source->param) !== '') {
+            parse_str(ltrim((string) $source->param, '&'), $extra);
+            $query = array_merge($query, $extra);
+        }
+
+        return $query;
+    }
+
+    private function persistCollectState(CollectSourceModel $source, int $page, int $created, int $updated, string $msg, bool $ok, int $skipped = 0, bool $writeLog = true): void
     {
         $source->last_collect_at = time();
         $source->updated_at = time();
@@ -361,7 +425,7 @@ class CollectIngestService
             $source->last_error = $ok ? '' : mb_substr($msg, 0, 250);
         }
         $source->save();
-        if (! Schema::hasTable('video_collect_logs')) {
+        if (! $writeLog || ! Schema::hasTable('video_collect_logs')) {
             return;
         }
         VideoCollectLog::query()->create([

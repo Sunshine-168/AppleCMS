@@ -694,16 +694,9 @@ class SysUserService
             return Result::fail(admin_t('auth.locked'));
         }
 
-        $captcha = trim($vscode);
-
-        if ($captcha === '')
-        {
-            return Result::fail(admin_t('auth.need_captcha'));
-        }
-
-        if (! Captcha::check($captcha))
-        {
-            return Result::fail(admin_t('auth.captcha_wrong'));
+        $checked = Captcha::verify($vscode);
+        if (! $checked['ok']) {
+            return Result::fail($checked['msg'] !== '' ? $checked['msg'] : admin_t('auth.captcha_wrong'));
         }
 
         $user = $this->sysUserModel->findByCondition([['username', '=', $username]]);

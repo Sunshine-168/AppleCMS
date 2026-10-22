@@ -305,6 +305,9 @@
     }
 
     var collectFxTimer = 0;
+    var collectBusy = false;
+    var collectRunHours = 0;
+    var collectRunId = 0;
     var collectFxHide = 0;
     var lastProgress = {};
     function collectStats(p) {
@@ -438,14 +441,71 @@
         }
         apply(lastProgress);
     }
-    function runCollect(row, hours, pages, confirmText) {
+    function collectPageNo(res) {
+        var page = res && res.data && res.data.page;
+        if (!page || typeof page !== 'object') return 0;
+        return parseInt(page.page, 10) || 0;
+    }
+    function collectPageTotal(res) {
+        var page = res && res.data && res.data.page;
+        if (!page || typeof page !== 'object') return 0;
+        return parseInt(page.pagecount || page.pageCount, 10) || 0;
+    }
+    function collectTimeoutMsg(res, page) {
+        var msg = res && res.msg ? String(res.msg) : '';
+        if (msg.indexOf('Maximum execution time') >= 0 || msg.indexOf('30 秒') >= 0) {
+            return '这一页被 30 秒限制打断，从第 ' + (page > 0 ? page : 1) + ' 页继续';
+        }
+        return msg;
+    }
+    function runCollectChain(row, hours, makeFirst) {
         if (String(row.status) === '0') { U.toast(L.please_enable_collect, 'err'); return; }
-        if (confirmText && !U.confirm(confirmText)) return;
+        if (collectBusy) return;
+        collectBusy = true;
         startCollectFx(row.name, row.id);
-        U.post('/admin/video/collects/run', {id: row.id, page: 1, pages: pages || 999, hours: hours || 0}).then(function (res) {
-            finishCollectFx(row.name, res, L.collect_done, row.id);
+        var totals = {created: 0, updated: 0, skipped: 0};
+        var guard = 0;
+        function finish(res, okMsg, bad) {
+            collectBusy = false;
+            if (res && res.data) {
+                res.data.created = totals.created;
+                res.data.updated = totals.updated;
+                res.data.skipped = totals.skipped;
+            }
+            finishCollectFx(row.name, res, okMsg || L.collect_done, row.id);
             table.refresh();
-            U.toast((res && res.msg) || L.collect_done, res && res.code === 0 ? 'ok' : 'err');
+            U.toast(okMsg || ((res && res.msg) || L.collect_done), bad ? 'err' : 'ok');
+        }
+        function after(res, requested) {
+            if (!res || res.code !== 0) {
+                var msg = collectTimeoutMsg(res, requested);
+                finish(res, msg || L.collect_done, true);
+                return;
+            }
+            totals.created += parseInt(res.data && res.data.created, 10) || 0;
+            totals.updated += parseInt(res.data && res.data.updated, 10) || 0;
+            totals.skipped += parseInt(res.data && res.data.skipped, 10) || 0;
+            var cur = collectPageNo(res) || requested;
+            var total = collectPageTotal(res);
+            guard += 1;
+            if (total > cur && guard < 999 && cur >= requested) {
+                U.post('/admin/video/collects/run', {id: row.id, page: cur + 1, pages: 1, hours: hours || 0, quiet: 1}).then(function (next) {
+                    after(next, cur + 1);
+                });
+                return;
+            }
+            var msg = '采集完成，新增 ' + totals.created + '，更新 ' + totals.updated + '，跳过 ' + totals.skipped;
+            if (res) res.msg = msg;
+            finish(res, msg, false);
+        }
+        makeFirst().then(function (res) { after(res, collectPageNo(res) || 1); });
+    }
+    function runCollect(row, hours, confirmText) {
+        if (confirmText && !U.confirm(confirmText)) return;
+        collectRunHours = hours || 0;
+        collectRunId = row.id;
+        runCollectChain(row, hours, function () {
+            return U.post('/admin/video/collects/run', {id: row.id, page: 1, pages: 1, hours: hours || 0});
         });
     }
 
@@ -530,15 +590,13 @@
         e.preventDefault();
         if (a.classList.contains('js-edit')) openDialog('edit', row);
         if (a.classList.contains('js-bind')) openBind(row);
-        if (a.classList.contains('js-today')) runCollect(row, 24, 999);
-        if (a.classList.contains('js-week')) runCollect(row, 168, 999);
-        if (a.classList.contains('js-all')) runCollect(row, 0, 999, L.confirm_collect_all);
+        if (a.classList.contains('js-today')) runCollect(row, 24);
+        if (a.classList.contains('js-week')) runCollect(row, 168);
+        if (a.classList.contains('js-all')) runCollect(row, 0, L.confirm_collect_all);
         if (a.classList.contains('js-resume')) {
-            startCollectFx(row.name, row.id);
-            U.post('/admin/video/collects/resume', {id: row.id, pages: 999, hours: 0}).then(function (res) {
-                finishCollectFx(row.name, res, L.resume_done, row.id);
-                table.refresh();
-                U.toast((res && res.msg) || L.resume_done, res && res.code === 0 ? 'ok' : 'err');
+            var resumeHours = String(collectRunId) === String(row.id) ? collectRunHours : 0;
+            runCollectChain(row, resumeHours, function () {
+                return U.post('/admin/video/collects/resume', {id: row.id, pages: 1, hours: resumeHours});
             });
         }
         if (a.classList.contains('js-retry')) {

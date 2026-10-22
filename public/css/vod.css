@@ -1506,6 +1506,7 @@ h2 .btn-link { font-size:13px; font-weight:400; margin-left:8px; }
     border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
 }
 .flink-captcha { display: grid; gap: 8px; }
+.flink-captcha cap-widget { display: block; width: 100%; }
 .flink-captcha-label {
     font-size: 12px;
     font-weight: 600;

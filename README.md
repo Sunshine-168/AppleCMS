@@ -83,7 +83,7 @@
 | 你现在要做什么 | 往下看 |
 |---|---|
 | 自己电脑先跑起来看看 | [本机试用](#本机试用) |
-| 宝塔已经建好网站 / 有域名 | [宝塔上线](#宝塔上线) |
+| 宝塔已经建好网站 / 有域名 | [宝塔上线](#宝塔上线)。安装页有分步图：`/install?way=baota` |
 | 装好了，不知道进哪 | [装好后怎么进](#装好后怎么进) |
 | `/install` 打不开、500、定时不跑 | [打不开时](#打不开时) |
 
@@ -169,64 +169,19 @@ php artisan video:install --password=YourPass#1 --demo
 
 ## 宝塔上线
 
-按顺序做，不要跳。下面把 `/www/wwwroot/example.com` 换成你的**项目根**。
+没有电脑基础的，打开安装页的 **宝塔配置** 一栏，按五张示意图填：`http://你的域名/install?way=baota`。
 
-1. **建站**  
-   PHP 选 **8.4**。运行目录 / 网站根目录填：
+顺序就这五步：
 
-   ```
-   /www/wwwroot/example.com/public
-   ```
+1. 软件商店安装 **PHP 8.4**，网站 PHP 也选 8.4。
+2. 网站目录填项目里的 `public`（例如 `/www/wwwroot/你的域名/public`）。填成项目根，首页会变成文件列表。
+3. `storage`、`bootstrap/cache` 所有者改为 `www`，并允许写入。
+4. 浏览器打开 `http://你的域名/install`，或在项目根执行 `bash install.sh YourPass#1`。正式站用 MySQL，字符集 `utf8mb4`。
+5. 计划任务：Shell 脚本，每分钟一次。命令用 `/www/server/php/84/bin/php`，不要用 `php-fpm`，脚本里不要再写 `* * * * *`。
 
-   不要填到项目根，也不要填到 `public` 再往里一层。
+装好后进 `http://你的域名/admin/login`。`.env` 里把 `APP_URL` 改成你的域名，`APP_ENV=production`，`APP_DEBUG=false`，然后执行 `php artisan config:clear`。
 
-2. **放代码**  
-   项目根里要有 `artisan`。终端先进入项目根：
-
-   ```bash
-   cd /www/wwwroot/example.com
-   ```
-
-3. **权限**（运行用户一般是 `www`）  
-   文件管理里把 `storage`、`bootstrap/cache` 所有者改为 `www`，并允许写入。或：
-
-   ```bash
-   chown -R www:www storage bootstrap/cache database
-   chmod -R ug+rwx storage bootstrap/cache database
-   ```
-
-4. **安装**  
-   同一目录执行 `bash install.sh YourPass#1`，或打开 `http://你的域名/install` 用网页装。  
-   正式站建议 MySQL，库字符集 `utf8mb4`。
-
-5. **改站点地址**  
-   编辑项目根 `.env`：
-
-   ```
-   APP_URL=https://你的域名
-   APP_ENV=production
-   APP_DEBUG=false
-   ```
-
-   改完执行：
-
-   ```bash
-   /www/server/php/84/bin/php artisan config:clear
-   ```
-
-6. **计划任务（每分钟）**  
-   必须用 **`/bin/php`**，不要用 `php-fpm`。后台「系统 → 监控」也会给出当前机器的一行。宝塔计划任务示例：
-
-   ```bash
-   /www/server/php/84/bin/php /www/wwwroot/example.com/artisan schedule:run >> /dev/null 2>&1
-   ```
-
-   采集、点击重置、监控都靠这一行。没配就会停。
-
-7. **进后台**  
-   `http://你的域名/admin/login`。脚本安装账号是 `admin`，密码是你在第 4 步写的那个。
-
-nginx 完整示例、php.ini 建议见安装页「上线部署」或后台说明「环境」。
+nginx 和 php.ini 见安装页「上线部署」，或后台说明「环境」（同一套宝塔图）。
 
 ---
 
@@ -251,7 +206,7 @@ nginx 完整示例、php.ini 建议见安装页「上线部署」或后台说明
 | 提示已经装过 | 删掉 `storage/app/install.lock`，再打开 `/install` |
 | 计划任务没反应、监控没数据 | 任务用了 `php-fpm` 而不是 `/bin/php`；到「系统 → 监控」复制正确命令 |
 | 日志里有 `pcntl_signal` | 把本仓库更新后再跑 `schedule:run`。宝塔 PHP 常禁用这个函数，程序已兼容 |
-| 采集网页点「今天」中途断 | 把 PHP `max_execution_time`、nginx `fastcgi_read_timeout` 调到 300 以上 |
+| 采集网页点「今天」中途断 | 当前版本会一页一页接着采。若连单独一页也被掐断，再把 PHP `max_execution_time` 和 nginx `fastcgi_read_timeout` 调大 |
 
 重装：删 `storage/app/install.lock`，必要时清空库或删 `database/database.sqlite`，再走安装。
 

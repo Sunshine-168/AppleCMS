@@ -249,6 +249,21 @@
             <div class="settings-pane{{ $tab === 'more' ? ' active' : '' }}" data-pane="more">
                 <p class="muted field-hint">{{ admin_t('ui.settings_more_lead') }}</p>
 
+                <h3>{{ admin_t('ui.captcha_head') }}</h3>
+                <label for="captcha_driver">{{ admin_t('ui.captcha_driver') }}</label>
+                <select id="captcha_driver" name="captcha_driver">
+                    <option value="image" @selected(($s['captcha_driver'] ?? 'image') !== 'cap')>{{ admin_t('ui.captcha_image') }}</option>
+                    <option value="cap" @selected(($s['captcha_driver'] ?? '') === 'cap')>{{ admin_t('ui.captcha_cap') }}</option>
+                </select>
+                <p class="muted field-hint">{{ admin_t('ui.captcha_driver_hint') }}</p>
+                <label for="cap_api_endpoint">{{ admin_t('ui.cap_endpoint') }}</label>
+                <input id="cap_api_endpoint" type="url" name="cap_api_endpoint" value="{{ $s['cap_api_endpoint'] ?? '' }}" placeholder="https://cap.example.com">
+                <label for="cap_site_key">{{ admin_t('ui.cap_site_key') }}</label>
+                <input id="cap_site_key" type="text" name="cap_site_key" value="{{ $s['cap_site_key'] ?? '' }}" autocomplete="off">
+                <label for="cap_secret">{{ admin_t('ui.cap_secret') }}</label>
+                <input id="cap_secret" type="password" name="cap_secret" value="" placeholder="{{ admin_t('ui.cap_secret_ph') }}" autocomplete="new-password">
+                <p class="muted field-hint">{{ admin_t('ui.cap_hint') }}</p>
+
                 <h3>{{ admin_t('ui.vod_urls') }}</h3>
                 <label for="rewrite_mode">{{ admin_t('ui.rewrite_how') }}</label>
                 <select id="rewrite_mode" name="rewrite_mode">

@@ -149,6 +149,7 @@ body.mac-login {
     box-shadow: 0 0 0 3px rgba(64, 204, 146, .18);
 }
 
+.mac-captcha-cap cap-widget { display: block; width: 100%; margin-top: 4px; }
 .mac-captcha {
     display: flex;
     gap: 10px;

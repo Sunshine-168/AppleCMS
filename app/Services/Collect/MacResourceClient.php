@@ -2,6 +2,8 @@
 
 namespace App\Services\Collect;
 
+use Illuminate\Http\Client\Pool;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class MacResourceClient
@@ -18,9 +20,72 @@ class MacResourceClient
         }
 
         $url = $this->buildUrl($apiUrl, $query);
-        $body = $this->httpGet($url);
+
+        return $this->fromBody($this->httpGet($url), $url, $prefer);
+    }
+
+    /**
+     * 同时拉取多页。键是页码。
+     *
+     * @param  array<int, array<string, mixed>>  $queries
+     * @return array<int, array{ok:bool,msg:string,format:string,page:array,types:array,list:array}>
+     */
+    public function fetchMany(string $apiUrl, array $queries, string $prefer = 'auto'): array
+    {
+        $apiUrl = trim($apiUrl);
+        if ($apiUrl === '' || ! preg_match('#^https?://#i', $apiUrl)) {
+            $fail = $this->fail('采集地址无效');
+            $out = [];
+            foreach ($queries as $page => $query) {
+                $out[(int) $page] = $fail;
+            }
+
+            return $out;
+        }
+
+        $urls = [];
+        foreach ($queries as $page => $query) {
+            $urls[(string) $page] = $this->buildUrl($apiUrl, $query);
+        }
+        $verify = $this->verifySsl();
+        $responses = Http::pool(function (Pool $pool) use ($urls, $verify) {
+            foreach ($urls as $key => $url) {
+                $request = $pool->as($key)
+                    ->timeout(30)
+                    ->withHeaders(['User-Agent' => 'LaraVideo-Collector/1.0']);
+                if (! $verify) {
+                    $request = $request->withoutVerifying();
+                }
+                $request->get($url);
+            }
+        });
+
+        $out = [];
+        foreach ($urls as $key => $url) {
+            $response = $responses[$key] ?? null;
+            if ($response instanceof \Throwable) {
+                $body = str_contains($response->getMessage(), 'Maximum execution time') ? $response->getMessage() : '';
+            } elseif ($response instanceof Response) {
+                $body = (string) $response->body();
+                if (! $response->successful() && ! str_contains($body, 'Maximum execution time')) {
+                    $body = '';
+                }
+            } else {
+                $body = '';
+            }
+            $out[(int) $key] = $this->fromBody($body, $url, $prefer);
+        }
+
+        return $out;
+    }
+
+    private function fromBody(string $body, string $url, string $prefer): array
+    {
         if ($body === '') {
             return $this->fail('接口无返回：'.$url);
+        }
+        if (str_contains($body, 'Maximum execution time')) {
+            return $this->fail('这一页被 30 秒限制打断，从上一页继续');
         }
 
         $prefer = strtolower($prefer);
@@ -50,20 +115,33 @@ class MacResourceClient
         return $apiUrl.$join.http_build_query($query);
     }
 
+    private function verifySsl(): bool
+    {
+        return filter_var(env('COLLECT_VERIFY_SSL', false), FILTER_VALIDATE_BOOLEAN);
+    }
+
     private function httpGet(string $url): string
     {
-        $verify = filter_var(env('COLLECT_VERIFY_SSL', false), FILTER_VALIDATE_BOOLEAN);
+        $verify = $this->verifySsl();
         $request = Http::timeout(30)
             ->withHeaders(['User-Agent' => 'LaraVideo-Collector/1.0']);
         if (! $verify) {
             $request = $request->withoutVerifying();
         }
-        $response = $request->get($url);
+        try {
+            $response = $request->get($url);
+        } catch (\Throwable $e) {
+            return str_contains($e->getMessage(), 'Maximum execution time') ? $e->getMessage() : '';
+        }
+        $body = (string) $response->body();
+        if (str_contains($body, 'Maximum execution time')) {
+            return $body;
+        }
         if (! $response->successful()) {
             return '';
         }
 
-        return (string) $response->body();
+        return $body;
     }
 
     /** @return array<string, mixed> */

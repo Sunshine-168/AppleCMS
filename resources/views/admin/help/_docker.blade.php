@@ -21,7 +21,7 @@
 
         <h3>3. 打开网站</h3>
         <p class="muted">前台 <a href="http://127.0.0.1:8010/">http://127.0.0.1:8010/</a><br>后台 <a href="http://127.0.0.1:8010/admin/login">http://127.0.0.1:8010/admin/login</a></p>
-        <p class="hint">上线前改掉密码，并把 <code>APP_DEBUG</code> 设为 <code>false</code>。端口是 <strong>8010</strong>。</p>
+        <p class="hint">上线前改掉密码，并把 <code>APP_DEBUG</code> 设为 <code>false</code>。端口是 <strong>8010</strong>。容器里会每分钟执行 <code>schedule:run</code>，定时采集不用再配 crontab。网页采集按页进行，不会整次卡在 30 秒上。</p>
 
         <h3>常用命令</h3>
         <div class="code">

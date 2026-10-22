@@ -131,6 +131,10 @@ class VideoSettingService
             'ai_key' => '',
             'ai_model' => '',
             'ai_endpoint' => '',
+            'captcha_driver' => 'image',
+            'cap_api_endpoint' => '',
+            'cap_site_key' => '',
+            'cap_secret' => '',
         ];
         if (! $this->ready()) {
             return $defaults;
@@ -181,6 +185,7 @@ class VideoSettingService
             'member_growth_mode', 'member_trial_days', 'member_invite_reward_days',
             'member_invite_month_cap', 'member_invite_ip_daily_cap', 'member_invite_l2_days', 'member_invite_l3_days', 'member_trial_group_id',
             'ai_provider', 'ai_key', 'ai_model', 'ai_endpoint',
+            'captcha_driver', 'cap_api_endpoint', 'cap_site_key', 'cap_secret',
             'scout_search_enabled', 'scout_driver', 'scout_meili_host', 'scout_meili_key',
         ];
         try {
@@ -206,7 +211,7 @@ class VideoSettingService
             }
             $data['admin_ip_allow'] = (string) ($checked['data']['value'] ?? '');
         }
-        $keepIfBlank = ['smtp_pass', 's3_secret', 'ai_key', 'pay_wechat_key', 'pay_alipay_key', 'sms_secret', 'weixin_secret', 'scout_meili_key'];
+        $keepIfBlank = ['smtp_pass', 's3_secret', 'ai_key', 'pay_wechat_key', 'pay_alipay_key', 'sms_secret', 'weixin_secret', 'scout_meili_key', 'cap_secret'];
         foreach ($keys as $key) {
             if (! array_key_exists($key, $data)) {
                 continue;

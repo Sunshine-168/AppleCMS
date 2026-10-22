@@ -18,7 +18,7 @@
         <tr><td><code>monitor:tick</code></td><td>Every minute</td><td>Runtime samples</td></tr>
     </tbody>
 </table>
-<p class="hint"><code>php artisan serve</code> and Docker trials can skip this. Production needs the line below. Paths are filled for this server.</p>
+<p class="hint">A local <code>php artisan serve</code> can skip this. The Docker image runs it every minute. A BaoTa production site needs the line below. Paths are filled for this server.</p>
 
 <h3>Minimum production cron</h3>
 <div class="code">
@@ -36,4 +36,4 @@ php artisan video:hits-reset
 php artisan video:html-make
 php artisan stats:prune</code></pre>
 </div>
-<p class="muted">One feed: <code>php artisan video:collect {id}</code>. Disk HTML can also be started from {!! $hl('make', 'Static HTML') !!}.</p>
+<p class="muted">One feed: <code>php artisan video:collect {id} --pages=50 --hours=24 --jobs=4</code>. The scheduler fetches 4 pages at once, then saves them in page order. Lower <code>--jobs</code> to 2 if the source rate-limits you. The admin button still requests one page at a time so a 30 second limit does not wipe the run. Disk HTML can also be started from {!! $hl('make', 'Static HTML') !!}.</p>
