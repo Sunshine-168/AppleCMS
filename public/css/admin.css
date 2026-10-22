@@ -3745,6 +3745,11 @@ table.data td.collect-ops {
 .site-form select { width: 100%; max-width: none; }
 .settings-page { max-width: 640px; }
 .settings-page textarea { min-height: 88px; }
+.settings-page .field-hint {
+    max-width: 560px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
 .settings-page label.inline {
     display: flex;
     width: 100%;
