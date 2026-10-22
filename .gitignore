@@ -23,6 +23,7 @@
 /storage/framework/views/*
 !/storage/framework/views/.gitignore
 composer.phar
+composer-update.sh
 /tests
 /tools
 /scripts
