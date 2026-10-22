@@ -24,6 +24,8 @@
 !/storage/framework/views/.gitignore
 composer.phar
 composer-update.sh
+.editorconfig
+phpunit.xml
 /tests
 /tools
 /scripts
