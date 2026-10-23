@@ -105,7 +105,51 @@ class VideoInstallService
                 'detail' => $key ? '已有' : '安装时自动生成',
                 'required' => false,
             ],
+            $this->disabledFunctionCheck(),
         ];
+    }
+
+    /**
+     * 宝塔默认会禁用一批函数。这里只提示本程序真正会用到的那些。
+     *
+     * @return array{key:string,label:string,ok:bool,detail:string,required:bool}
+     */
+    public function disabledFunctionCheck(?string $disabledList = null): array
+    {
+        $blocked = $this->blockedFunctions($disabledList);
+
+        return [
+            'key' => 'disable_functions',
+            'label' => '禁用函数',
+            'ok' => $blocked === [],
+            'detail' => $blocked === []
+                ? '没有禁用本程序要用的函数'
+                : '宝塔禁用了 '.implode('、', $blocked).'。软件商店打开 PHP-8.4 的「设置」，在「禁用函数」里删掉这些名字，保存后重载。计划任务用的命令行 PHP 也要同样删。',
+            'required' => false,
+        ];
+    }
+
+    /** @return list<string> */
+    public function blockedFunctions(?string $disabledList = null): array
+    {
+        $raw = strtolower($disabledList ?? (string) ini_get('disable_functions'));
+        $disabled = [];
+        foreach (explode(',', $raw) as $name) {
+            $name = trim($name);
+            if ($name !== '') {
+                $disabled[$name] = true;
+            }
+        }
+
+        $needed = ['putenv', 'proc_open', 'shell_exec', 'exec', 'symlink', 'popen'];
+        $blocked = [];
+        foreach ($needed as $name) {
+            if (isset($disabled[$name])) {
+                $blocked[] = $name;
+            }
+        }
+
+        return $blocked;
     }
 
     public function requiredPassed(array $checks): bool

@@ -104,7 +104,7 @@
                         </div>
                     </div>
                     @endif
-                    <p class="baota-note">红圈在 PHP-8.4 右边的「安装」。灰色那一行不要当网站 PHP。</p>
+                    <p class="baota-note">红圈在 PHP-8.4 右边的「安装」。灰色那一行不要当网站 PHP。装好后点「设置」，打开「禁用函数」，删掉 putenv、proc_open、shell_exec、exec、symlink、popen。安装页会列出还禁用着的名字。</p>
                 </figure>
             </li>
             <li>
