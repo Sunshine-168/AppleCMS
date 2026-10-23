@@ -172,7 +172,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 }
                 $body = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
                     .'<title>'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</title>'
-                    .'<link rel="stylesheet" href="'.e(asset('css/install.css')).'">'
+                    .'<link rel="stylesheet" href="'.e(asset('assets/css/install.css')).'">'
                     .'</head><body><div class="wrap"><div class="brand"><span class="logo">苹</span> 苹果v12 安装</div>'
                     .'<div class="card" style="display:block;padding:28px 32px"><h1 style="margin:0 0 8px;font-size:22px">'.htmlspecialchars($title, ENT_QUOTES, 'UTF-8').'</h1>'
                     .'<p class="lead">'.htmlspecialchars($lead, ENT_QUOTES, 'UTF-8').'</p>'

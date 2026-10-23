@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>安装完毕</title>
-    <link rel="stylesheet" href="{{ asset('css/install.css') }}?v={{ @filemtime(public_path('css/install.css')) ?: '1' }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/install.css') }}?v={{ @filemtime(public_path('assets/css/install.css')) ?: '1' }}">
 </head>
 <body>
 <div class="wrap install-done">

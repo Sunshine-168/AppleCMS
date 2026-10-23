@@ -14,7 +14,7 @@ class SearchWordLog
     {
         $wd = trim((string) $request->query('wd', $request->query('q', '')));
         $wd = mb_substr($wd, 0, 80);
-        if ($wd !== '' && ! $request->is('admin/*') && ! $request->is('install*') && ! $request->is('install/*')) {
+        if ($wd !== '' && ! $request->is('admin/*') && ! $request->is('install*') && ! $request->is('install/*') && ! $request->is('assets/*') && ! $request->is('uploads/*') && ! $request->is('storage/*')) {
             try {
                 if (Schema::hasTable('video_search_words')) {
                     $now = time();

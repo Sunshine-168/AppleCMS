@@ -6,7 +6,7 @@
     <title>{{ conf('name') ?: '苹果v12' }} - @yield('title', admin_t('brand'))</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ @filemtime(public_path('css/admin.css')) ?: '1' }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}?v={{ @filemtime(public_path('assets/css/admin.css')) ?: '1' }}">
     @stack('styles')
 </head>
 <body>
@@ -246,7 +246,7 @@
     });
 })();
 </script>
-<script src="{{ asset('js/admin-ui.js') }}?v={{ @filemtime(public_path('js/admin-ui.js')) ?: '1' }}"></script>
+<script src="{{ asset('assets/js/admin-ui.js') }}?v={{ @filemtime(public_path('assets/js/admin-ui.js')) ?: '1' }}"></script>
 @php
     $adminUiLang = [
         'close' => admin_t('ui.close'),

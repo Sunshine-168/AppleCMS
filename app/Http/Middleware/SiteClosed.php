@@ -12,7 +12,7 @@ class SiteClosed
     public function handle(Request $request, Closure $next): Response
     {
         $path = trim($request->path(), '/');
-        foreach (['admin', 'install', 'api', 'api.php', 'static', 'css', 'js', 'storage'] as $prefix) {
+        foreach (['admin', 'install', 'api', 'api.php', 'assets', 'storage'] as $prefix) {
             if ($path === $prefix || str_starts_with($path, $prefix.'/')) {
                 return $next($request);
             }

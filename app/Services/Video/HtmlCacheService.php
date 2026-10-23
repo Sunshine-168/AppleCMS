@@ -59,7 +59,7 @@ class HtmlCacheService
         }
         $first = explode('/', $path)[0];
 
-        return in_array($first, ['admin', 'member', 'api', 'api.php', 'player', 'play', 'down', 'search', 'install'], true);
+        return in_array($first, ['admin', 'member', 'api', 'api.php', 'player', 'play', 'down', 'search', 'install', 'assets', 'uploads', 'storage', 'html'], true);
     }
 
     public function isCacheable(Request $request): bool
