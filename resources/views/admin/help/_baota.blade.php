@@ -5,12 +5,12 @@
     $baotaFill = str_contains($baotaScript, 'php-fpm') ? $baotaExample : $baotaScript;
     $menus = ['首页', '网站', 'FTP', '数据库', '监控', '安全', '文件', '计划任务', '软件商店', '设置'];
     $photo = function (string $file): string {
-        $abs = public_path('install/baota/'.$file);
+        $abs = public_path('baota/'.$file);
         if (! is_file($abs)) {
             return '';
         }
 
-        return asset('install/baota/'.$file).'?v='.filemtime($abs);
+        return asset('baota/'.$file).'?v='.filemtime($abs);
     };
 @endphp
 @once

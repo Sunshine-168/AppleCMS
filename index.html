@@ -62,19 +62,19 @@
     <div class="card">
         <h2>1. 先确认 PHP 是 8.4</h2>
         <p>宝塔左边点「软件商店」，搜索 PHP。认准 <span class="hit">PHP-8.4</span>。右边是「安装」就点安装；已经是「设置」，就不用再装。</p>
-        <img src="public/install/guide/1-php.png" alt="软件商店里认准 PHP-8.4，点设置">
+        <img src="public/guide/1-php.png" alt="软件商店里认准 PHP-8.4，点设置">
     </div>
 
     <div class="card">
         <h2>2. 打开你的网站设置</h2>
         <p>顶部点「网站」，找到你的域名，右边点红框里的「设置」。</p>
-        <img src="public/install/guide/2-open.png" alt="网站列表里点设置">
+        <img src="public/guide/2-open.png" alt="网站列表里点设置">
     </div>
 
     <div class="card">
         <h2>3. 运行目录改成 /public</h2>
         <p>左边点「网站目录」。上面的网站目录不用改。下面的运行目录现在是 <b>/</b>，改成 <span class="hit">/public</span>，再点右边绿色「保存」。</p>
-        <img src="public/install/guide/3-run.png" alt="运行目录改成 /public 后点保存">
+        <img src="public/guide/3-run.png" alt="运行目录改成 /public 后点保存">
         <p class="note">页面上没有「运行目录」时，把网站目录末尾改成 /public，再保存。</p>
     </div>
 
@@ -84,8 +84,8 @@
 <pre>location / {
     try_files $uri $uri/ /index.php?$query_string;
 }</pre>
-        <img src="public/install/guide/4-rewrite.png" alt="伪静态白框里贴规则，然后点保存">
-        <p class="note">保存后再打开你的域名。这一页消失，就说明已经指对了，接着做安装。</p>
+        <img src="public/guide/4-rewrite.png" alt="伪静态白框里贴规则，然后点保存">
+        <p class="note">保存后再打开你的域名。这一页消失，就说明已经指对了。接着打开「你的域名/install」做安装。如果出现 403，到宝塔「文件」里删掉 public 下面那个叫 install 的文件夹，再刷新。</p>
     </div>
 </div>
 </body>
