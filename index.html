@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>还差一步就能打开网站</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #f4f6f8;
+            color: #1d2129;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        .wrap { max-width: 980px; margin: 0 auto; padding: 28px 16px 64px; }
+        h1 { margin: 0 0 8px; font-size: 30px; line-height: 1.3; }
+        .lead { margin: 0 0 18px; color: #4e5969; font-size: 16px; }
+        .card {
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 18px 18px 14px;
+            margin: 0 0 16px;
+        }
+        h2 { margin: 0 0 6px; font-size: 20px; }
+        p { margin: 0 0 12px; }
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 1px solid #e5e6eb;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .hit {
+            padding: 0 6px;
+            border-radius: 6px;
+            background: #e8f6eb;
+            color: #137333;
+            font-weight: 700;
+        }
+        pre {
+            margin: 0 0 12px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #1e2228;
+            color: #d6f5d6;
+            font-size: 15px;
+            line-height: 1.55;
+            overflow: auto;
+        }
+        .note { margin: 10px 0 0; color: #86909c; font-size: 14px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>还差一步，网站才能打开</h1>
+    <p class="lead">红框就是要点的地方。按顺序做完，再刷新这个网址。</p>
+
+    <div class="card">
+        <h2>1. 先确认 PHP 是 8.4</h2>
+        <p>宝塔左边点「软件商店」，搜索 PHP。认准 <span class="hit">PHP-8.4</span>。右边是「安装」就点安装；已经是「设置」，就不用再装。</p>
+        <img src="public/install/guide/1-php.png" alt="软件商店里认准 PHP-8.4，点设置">
+    </div>
+
+    <div class="card">
+        <h2>2. 打开你的网站设置</h2>
+        <p>顶部点「网站」，找到你的域名，右边点红框里的「设置」。</p>
+        <img src="public/install/guide/2-open.png" alt="网站列表里点设置">
+    </div>
+
+    <div class="card">
+        <h2>3. 运行目录改成 /public</h2>
+        <p>左边点「网站目录」。上面的网站目录不用改。下面的运行目录现在是 <b>/</b>，改成 <span class="hit">/public</span>，再点右边绿色「保存」。</p>
+        <img src="public/install/guide/3-run.png" alt="运行目录改成 /public 后点保存">
+        <p class="note">页面上没有「运行目录」时，把网站目录末尾改成 /public，再保存。</p>
+    </div>
+
+    <div class="card">
+        <h2>4. 伪静态贴上这一段</h2>
+        <p>还是这个窗口，左边点「伪静态」。把下面整段贴进白框，点绿色「保存」。</p>
+<pre>location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}</pre>
+        <img src="public/install/guide/4-rewrite.png" alt="伪静态白框里贴规则，然后点保存">
+        <p class="note">保存后再打开你的域名。这一页消失，就说明已经指对了，接着做安装。</p>
+    </div>
+</div>
+</body>
+</html>

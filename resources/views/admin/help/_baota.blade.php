@@ -71,7 +71,7 @@
             <li>
                 <div class="baota-copy">
                     <h3>第 1 步　安装 PHP 8.4</h3>
-                    <p>左边点「软件商店」。上面搜索框输入 PHP。找到 <strong>PHP-8.4</strong> 那一行，点右边绿色「安装」。不要点 7.4。装完后，左边点「网站」，再点你的网站，把 PHP 版本改成 8.4。</p>
+                    <p>左边点「软件商店」，搜索 PHP。认准 <strong>PHP-8.4</strong> 那一行。右边还是「安装」就点安装；已经是「设置」和「卸载」，就是装好了。装完后，网站的 PHP 版本选 8.4。</p>
                 </div>
                 <figure class="baota-fig">
                     @if($photo('1-php.png') !== '')
@@ -107,8 +107,8 @@
             </li>
             <li>
                 <div class="baota-copy">
-                    <h3>第 2 步　网站目录要带 public</h3>
-                    <p>左边点「网站」，点你的域名，再点「网站目录」。根目录最后必须是 <strong>/public</strong>。没有这四个字母，打开首页只会看到一堆文件。</p>
+                    <h3>第 2 步　运行目录选 /public</h3>
+                    <p>左边点「网站」，点你的域名，再点「设置」里的「网站目录」。「网站目录」保持项目根，例如 <strong>/www/wwwroot/你的域名</strong>。下面的「运行目录」从 <strong>/</strong> 改成 <strong>/public</strong>，再点保存。页面上没有「运行目录」时，把网站目录末尾改成 <strong>/public</strong>。没改的话，打开首页是空白的 404，项目根里的说明页会告诉你点哪里。</p>
                 </div>
                 <figure class="baota-fig">
                     @if($photo('2-root.png') !== '')
@@ -125,18 +125,19 @@
                             <div class="bt-main">
                                 <div class="bt-form">
                                     <div class="bt-line"><span>域名</span><b class="bt-input">你的域名</b></div>
-                                    <div class="bt-line"><span>填错</span><b class="bt-input is-bad">/www/wwwroot/你的域名</b></div>
+                                    <div class="bt-line"><span>网站目录</span><b class="bt-input">/www/wwwroot/你的域名</b></div>
+                                    <div class="bt-line"><span>现在</span><b class="bt-input is-bad">运行目录 /</b></div>
                                     <div class="bt-line">
-                                        <span>网站目录</span>
-                                        <b class="bt-input is-good bt-hit">/www/wwwroot/你的域名/public</b>
+                                        <span>运行目录</span>
+                                        <b class="bt-input is-good bt-hit">/public</b>
                                     </div>
-                                    <div><span class="bt-call">填这一行，末尾要有 /public</span></div>
+                                    <div><span class="bt-call">改成 /public，再点保存</span></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     @endif
-                    <p class="baota-note">划掉的那行是项目根，不要用。绿框才是网站目录。</p>
+                    <p class="baota-note">网站目录保持项目根。红字那行是还没改的运行目录，绿框 /public 才是要点保存的。</p>
                 </figure>
             </li>
             <li>

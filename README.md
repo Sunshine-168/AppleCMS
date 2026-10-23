@@ -18,7 +18,7 @@
 
 ### 1.0.1
 
-- **安装**：安装页增加「宝塔配置」。按五步做：安装 PHP 8.4、网站目录指向 `public`、`storage` 和 `bootstrap/cache` 交给 `www`、打开 `/install`、计划任务每分钟跑一次。命令用 `/www/server/php/84/bin/php`，不要用 `php-fpm`，不要再写 `* * * * *`。装完页可以直接复制这一行。安装说明按网页安装、宝塔配置、Shell、Docker、上线部署五个入口来写。
+- **安装**：安装页增加「宝塔配置」。按五步做：安装 PHP 8.4、运行目录选 `/public`、`storage` 和 `bootstrap/cache` 交给 `www`、打开 `/install`、计划任务每分钟跑一次。命令用 `/www/server/php/84/bin/php`，不要用 `php-fpm`，不要再写 `* * * * *`。装完页可以直接复制这一行。安装说明按网页安装、宝塔配置、Shell、Docker、上线部署五个入口来写。
 - **采集**：后台「今天 / 本周 / 全部」每次只采 1 页，采完自动下一页。中途超时会从断开的那一页继续。命令行可同时拉多页：`php artisan video:collect --jobs=4`（1 到 8）。
 - **Docker**：镜像取消 PHP 30 秒限制。容器启动后自己每分钟执行 `schedule:run`，不用再配 crontab。
 - **验证码**：后台可以改用开源 Cap。不填的话仍用原来的算术图。
@@ -116,7 +116,7 @@
 | 装好了，不知道进哪 | | [装好后怎么进](#装好后怎么进) |
 | `/install` 打不开、500、定时不跑 | | [打不开时](#打不开时) |
 
-代码必须放在**项目根**（能看到 `artisan`、`install.sh`、`public/` 的那一层）。宝塔「网站根目录」填的是里面的 `public`，终端命令要在项目根执行，不要进 `public`。
+代码必须放在**项目根**（能看到 `artisan`、`install.sh`、`public/` 的那一层）。宝塔里「网站目录」填这一层，「运行目录」选 `/public`。终端命令也在项目根执行。
 
 ```bash
 git clone <你的仓库地址> AppleCms
@@ -203,7 +203,7 @@ php artisan video:install --password=YourPass#1 --demo
 顺序就这五步：
 
 1. 软件商店安装 **PHP 8.4**，网站 PHP 也选 8.4。
-2. 网站目录填项目里的 `public`（例如 `/www/wwwroot/你的域名/public`）。填成项目根，首页会变成文件列表。
+2. 「网站目录」填项目根（例如 `/www/wwwroot/你的域名`）。「运行目录」从 `/` 改成 `/public` 再保存。没改时打开首页会看到说明页，按页面上的步骤点即可。
 3. `storage`、`bootstrap/cache` 所有者改为 `www`，并允许写入。
 4. 浏览器打开 `http://你的域名/install`，或在项目根执行 `bash install.sh YourPass#1`。正式站用 MySQL，字符集 `utf8mb4`。
 5. 计划任务：Shell 脚本，每分钟一次。命令用 `/www/server/php/84/bin/php`，不要用 `php-fpm`，脚本里不要再写 `* * * * *`。
@@ -231,7 +231,7 @@ nginx 和 php.ini 见安装页「上线部署」，或后台说明「环境」�
 | 现象 | 先查 |
 |---|---|
 | `/install` 或全站 500 | `storage`、`bootstrap/cache` 不能写；或还没有 `APP_KEY`（先 `php artisan key:generate`） |
-| 打开首页是目录列表 / 只有文件 | 网站根目录没指到 `public` |
+| 打开首页是 404，或看到「还差一步」 | 宝塔「运行目录」改成 `/public` 并保存。没有这一栏时，把网站目录末尾改成 `/public` |
 | 提示已经装过 | 删掉 `storage/app/install.lock`，再打开 `/install` |
 | 计划任务没反应、监控没数据 | 任务用了 `php-fpm` 而不是 `/bin/php`；到「系统 → 监控」复制正确命令 |
 | 日志里有 `pcntl_signal` | 把本仓库更新后再跑 `schedule:run`。宝塔 PHP 常禁用这个函数，程序已兼容 |
@@ -261,7 +261,7 @@ nginx 和 php.ini 见安装页「上线部署」，或后台说明「环境」�
 ├── app/                         # 业务代码
 ├── plugins/                     # 插件（广告、支付、微信、弹幕等）
 ├── resources/views/themes/      # 前台模板
-├── public/                      # 网站根目录（宝塔运行目录填这里）
+├── public/                      # 宝塔「运行目录」选 /public
 ├── routes/                      # 前台、后台、接口路由
 ├── install.sh / install.ps1     # 一条命令安装
 ├── docker-compose.yml           # Docker
