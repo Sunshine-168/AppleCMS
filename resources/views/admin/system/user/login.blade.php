@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ admin_t('auth.login_title') }} - {{ conf('name') ?: '苹果v12' }}</title>
+    <link rel="icon" href="{{ asset('assets/images/brand/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/admin-login.css') }}?v={{ @filemtime(public_path('assets/css/admin-login.css')) ?: '1' }}">
 </head>
 <body class="mac-login">

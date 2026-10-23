@@ -83,13 +83,9 @@ a:hover { color: var(--primary-hover); }
     width: 28px;
     height: 28px;
     border-radius: 8px;
-    background: #89b6ff;
-    color: #fff;
-    display: grid;
-    place-items: center;
-    font-size: 13px;
-    font-weight: 700;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+    object-fit: contain;
+    display: block;
+    background: transparent;
 }
 .mod-nav {
     display: flex;

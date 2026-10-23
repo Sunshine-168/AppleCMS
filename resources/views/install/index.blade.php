@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>安装 苹果v12</title>
+    <link rel="icon" href="{{ asset('assets/images/brand/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/install.css') }}?v={{ @filemtime(public_path('assets/css/install.css')) ?: '1' }}">
 </head>
 <body>
@@ -16,8 +17,8 @@
     $sqlitePath = (string) ($sqlitePath ?? 'database/database.sqlite');
     $checks = is_array($checks ?? null) ? $checks : [];
 @endphp
-<div class="wrap install-index{{ ($way ?? 'web') === 'baota' ? ' is-wide' : '' }}">
-    <div class="brand"><span class="logo">苹</span> 苹果v12 安装</div>
+<div class="wrap install-index">
+    <div class="brand"><img class="logo" src="{{ asset('assets/images/brand/logo.png') }}" alt=""> 苹果v12 安装</div>
     <nav class="ways" aria-label="安装方式">
         <a class="{{ ($way ?? 'web') === 'web' ? 'is-on' : '' }}" href="{{ url('/install') }}">网页安装</a>
         <a class="{{ ($way ?? 'web') === 'baota' ? 'is-on' : '' }}" href="{{ url('/install?way=baota') }}">宝塔配置</a>

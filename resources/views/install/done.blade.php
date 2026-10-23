@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>安装完毕</title>
+    <link rel="icon" href="{{ asset('assets/images/brand/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/install.css') }}?v={{ @filemtime(public_path('assets/css/install.css')) ?: '1' }}">
 </head>
 <body>
 <div class="wrap install-done">
-    <div class="brand"><span class="logo">苹</span> 苹果v12 安装</div>
+    <div class="brand"><img class="logo" src="{{ asset('assets/images/brand/logo.png') }}" alt=""> 苹果v12 安装</div>
     <div class="card" style="display:block">
         <div class="done">
             <div class="mark">✓</div>

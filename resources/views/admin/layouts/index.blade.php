@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ conf('name') ?: '苹果v12' }} - @yield('title', admin_t('brand'))</title>
+    <link rel="icon" href="{{ asset('assets/images/brand/logo.png') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdn.staticfile.net/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}?v={{ @filemtime(public_path('assets/css/admin.css')) ?: '1' }}">
@@ -13,7 +14,6 @@
 @php
     $adminName = (string) (session('admin_username') ?: admin_t('top.admin'));
     $brand = (string) (conf('name') ?: '苹果v12');
-    $brandMark = function_exists('mb_substr') ? mb_substr($brand, 0, 1) : substr($brand, 0, 1);
     if (! isset($menus) || ! is_array($menus)) {
         try {
             $menus = app(\App\Services\Admin\System\SysPermService::class)->getAdminMenus((int) session('admin_uid', 0));
@@ -54,7 +54,7 @@
     <div class="side-backdrop" id="sideBackdrop"></div>
     <aside class="side" id="adminSide">
         <div class="side-brand">
-            <span class="logo">{{ $brandMark }}</span>
+            <img class="logo" src="{{ asset('assets/images/brand/logo.png') }}" alt="">
             <span>{{ $brand }}</span>
         </div>
         @include('admin.partials.mod-nav', ['class' => 'mod-nav-side'])
