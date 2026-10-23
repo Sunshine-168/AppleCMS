@@ -144,7 +144,25 @@
             </li>
             <li>
                 <div class="baota-copy">
-                    <h3>第 3 步　两个文件夹允许写入</h3>
+                    <h3>第 3 步　伪静态贴上规则</h3>
+                    <p>还是这个设置窗口，左边点红框里的「伪静态」。白框是空的，就把下面整段贴进去，再点绿色「保存」。上面的「当前」不用改。不贴的话，首页以外的地址会打不开。</p>
+                    <div class="code">
+                        <button type="button" class="copy" data-copy>复制</button>
+                        <pre><code>location / {
+    try_files /html$uri/index.html /html$uri $uri $uri/ /index.php?$query_string;
+}</code></pre>
+                    </div>
+                </div>
+                <figure class="baota-fig">
+                    @if($photo('4-rewrite.png') !== '')
+                        <img class="bt-photo" src="{{ $photo('4-rewrite.png') }}" alt="伪静态白框里贴上规则并保存">
+                    @endif
+                    <p class="baota-note">红框是「伪静态」、空白规则框和绿色「保存」。规则贴进白框，不要贴进别的地方。</p>
+                </figure>
+            </li>
+            <li>
+                <div class="baota-copy">
+                    <h3>第 4 步　两个文件夹允许写入</h3>
                     <p>左边点「文件」，打开网站目录，要能看见 <strong>public</strong> 和 <strong>storage</strong>。勾上 <strong>bootstrap</strong> 和 <strong>storage</strong> 两个文件夹。右上角点「更多」，再点「权限」。所有者保持 <strong>www</strong>，勾上「应用到子目录」，点绿色「确认」。上面三列勾选不用改。不改的话，安装页会打不开。</p>
                 </div>
                 <figure class="baota-fig">
@@ -183,7 +201,7 @@
             </li>
             <li>
                 <div class="baota-copy">
-                    <h3>第 4 步　用浏览器打开安装页</h3>
+                    <h3>第 5 步　用浏览器打开安装页</h3>
                     <p>地址栏输入你的域名，后面加上 <strong>/install</strong>。页面上只有三步：环境检查、数据库、管理员。自己先试用就选「文件数据库」。正式站选 MySQL，先在左边「数据库」里建一个空库。</p>
                 </div>
                 <figure class="baota-fig">
@@ -210,7 +228,7 @@
             </li>
             <li>
                 <div class="baota-copy">
-                    <h3>第 5 步　计划任务，每分钟一次</h3>
+                    <h3>第 6 步　计划任务，每分钟一次</h3>
                     <p>左边最下面点红框里的「计划任务」，再点绿色「添加任务」。任务类型保持 <strong>Shell 脚本</strong>。任务名称写「苹果定时」。执行周期不要用现在的「每天」，点开改成 <strong>N分钟</strong>，数字填 <strong>1</strong>。脚本框只粘贴下面这一行，不要自己加星号，也不要写成 php-fpm。最后点绿色「确定」。不添加这一条，采集不会自己跑。</p>
                     <div class="code">
                         <button type="button" class="copy" data-copy>复制</button>
