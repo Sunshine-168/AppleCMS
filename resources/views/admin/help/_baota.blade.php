@@ -145,11 +145,16 @@
             <li>
                 <div class="baota-copy">
                     <h3>第 3 步　两个文件夹允许写入</h3>
-                    <p>左边点「文件」。进到能看见 <strong>artisan</strong> 的那一层。分别点开 <strong>storage</strong> 和 <strong>bootstrap/cache</strong>，权限里所有者写成 <strong>www</strong>，勾上写入。不改的话，安装页会打不开。</p>
+                    <p>左边点「文件」，打开网站目录，要能看见 <strong>public</strong> 和 <strong>storage</strong>。勾上 <strong>bootstrap</strong> 和 <strong>storage</strong> 两个文件夹。右上角点「更多」，再点「权限」。所有者保持 <strong>www</strong>，勾上「应用到子目录」，点绿色「确认」。上面三列勾选不用改。不改的话，安装页会打不开。</p>
                 </div>
                 <figure class="baota-fig">
-                    @if($photo('3-perm.png') !== '')
-                        <img class="bt-photo" src="{{ $photo('3-perm.png') }}" alt="把 storage 交给 www 并允许写入">
+                    @if($photo('3-perm-open.png') !== '' || $photo('3-perm.png') !== '')
+                        @if($photo('3-perm-open.png') !== '')
+                            <img class="bt-photo" src="{{ $photo('3-perm-open.png') }}" alt="勾上 bootstrap 和 storage，再点更多里的权限">
+                        @endif
+                        @if($photo('3-perm.png') !== '')
+                            <img class="bt-photo" src="{{ $photo('3-perm.png') }}" alt="所有者保持 www，勾上应用到子目录后确认" style="margin-top:12px">
+                        @endif
                     @else
                     <div class="bt-shot">
                         <div class="bt-chrome"><i></i><i></i><i></i><b>文件 · 权限</b></div>
@@ -206,15 +211,20 @@
             <li>
                 <div class="baota-copy">
                     <h3>第 5 步　计划任务，每分钟一次</h3>
-                    <p>左边点「计划任务」。任务类型选 <strong>Shell 脚本</strong>。执行周期选「N 分钟」，数字填 <strong>1</strong>。脚本框只粘贴下面这一行，不要自己加星号，也不要写成 php-fpm。不添加这一条，采集不会自己跑。</p>
+                    <p>左边最下面点红框里的「计划任务」，再点绿色「添加任务」。任务类型保持 <strong>Shell 脚本</strong>。任务名称写「苹果定时」。执行周期不要用现在的「每天」，点开改成 <strong>N分钟</strong>，数字填 <strong>1</strong>。脚本框只粘贴下面这一行，不要自己加星号，也不要写成 php-fpm。最后点绿色「确定」。不添加这一条，采集不会自己跑。</p>
                     <div class="code">
                         <button type="button" class="copy" data-copy>复制</button>
                         <pre><code>{{ $baotaFill }}</code></pre>
                     </div>
                 </div>
                 <figure class="baota-fig">
-                    @if($photo('5-cron.png') !== '')
-                        <img class="bt-photo" src="{{ $photo('5-cron.png') }}" alt="计划任务添加 Shell 脚本">
+                    @if($photo('5-cron-open.png') !== '' || $photo('5-cron.png') !== '')
+                        @if($photo('5-cron-open.png') !== '')
+                            <img class="bt-photo" src="{{ $photo('5-cron-open.png') }}" alt="左边点计划任务，再点添加任务">
+                        @endif
+                        @if($photo('5-cron.png') !== '')
+                            <img class="bt-photo" src="{{ $photo('5-cron.png') }}" alt="计划任务里改成每分钟并贴上命令" style="margin-top:12px">
+                        @endif
                     @else
                     <div class="bt-shot">
                         <div class="bt-chrome"><i></i><i></i><i></i><b>计划任务</b></div>
